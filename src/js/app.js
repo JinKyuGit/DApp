@@ -25,13 +25,18 @@ App = {
 
   initWeb3: async function() {
     if (typeof web3 !== 'undefined') {
+  //App.web3Provider = web3.currentProvider;
   App.web3Provider = window.ethereum;
   } else {
   // If no injected web3 instance is detected, fall back to Ganache
-  App.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
+  
+  App.web3Provider = new Web3.providers.WebsocketProvider('ws://localhost:8546');
+  console.log("web3provoder :");
+  console.log(App.web3Provider)
   }
-  web3 = new Web3(App.web3Provider);
 
+  web3 = new Web3(App.web3Provider);
+  //web3 = web3.setProvider(new Web3.providers.WebsocketProvider('ws://localhost:8546'));
     return App.initContract();
   },
 
@@ -69,19 +74,20 @@ App = {
        });
   },
 
-  handleAdopt: function(event) {
+  handleAdopt: async function(event) {
     event.preventDefault();
    
 
     var petId = parseInt($(event.target).data('id'));
-
     var adoptionInstance;
-    web3.eth.getAccounts(function(error, accounts) {
+    await window.ethereum.enable();
+    await web3.eth.getAccounts(function(error, accounts) {
+      console.log('getAccount');
+      console.log(accounts);
        if (error) {
            console.log(error);
        }
     var account = accounts[0];
-    //account = '0xac912EeEFb9FCF7b9aBCE3242fbe6293F6685C47';
     console.log('account');
     console.log(account);
     
